@@ -67,6 +67,10 @@ class Game extends React.Component {
     });
   }
 
+  reverseStep(){
+    this.setState({reverse : !this.state.reverse});
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -76,7 +80,9 @@ class Game extends React.Component {
         locations: null,
       }],
       xIsNext: true,
+      reverse: false,
     };
+    this.reverseStep = this.reverseStep.bind(this);
   }
   render() {
       const history = this.state.history;
@@ -84,11 +90,12 @@ class Game extends React.Component {
       const winner = calculateWinner(current.squares);
 
       const moves = history.map((step,move) => {
-        const desc = move?
-        "step #"+move + " Go to move (" +parseInt(history[move].locations/3) + "," + parseInt(history[move].locations%3) +")" : "Start Game";
+        const showMove = this.state.reverse?history.length - 1 - move:move;
+        const desc = showMove?
+        "step #"+showMove + " Go to move (" +parseInt(history[showMove].locations/3) + "," + parseInt(history[showMove].locations%3) +")" : "Start Game";
         return (
-          <li key = {move}>
-          <button style={this.state.stepNumber===move?{'fontWeight': 'bold', 'color':'red'}:{}} onClick={ ()=>this.jumpTo(move) }>{desc}</button>
+          <li key = {showMove}>
+          <button style={this.state.stepNumber===showMove?{'fontWeight': 'bold', 'color':'red'}:{}} onClick={ ()=>this.jumpTo(showMove) }>{desc}</button>
         </li>
         );
       });
@@ -111,7 +118,8 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status }</div>
-          <ol>{moves}</ol>
+          <button onClick = {this.reverseStep}> {this.state.reverse?"逆序":"正序"} </button>
+          <ul>{moves}</ul>
         </div>
       </div>
     );
